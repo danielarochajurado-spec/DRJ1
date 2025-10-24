@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DDgame Host</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 10%;
+      background: #f7f7f7;
+    }
+    .hidden { display: none; }
+    input, button {
+      font-size: 18px;
+      padding: 10px;
+      margin: 10px;
+    }
+    button { cursor: pointer; border-radius: 8px; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin: 10px; font-size: 18px; }
+  </style>
+</head>
+<body>
+    
+
+  <!-- Login -->
+  <div id="loginScreen">
+    <h1>Enter Participant ID</h1>
+    <input id="participantId" type="text" placeholder="e.g., P001" />
+    <br />
+    <button onclick="startSession()">Continue</button>
+  </div>
+
+  <!-- Menu -->
+  <div id="menuScreen" class="hidden">
+    <h1>Select a Task</h1>
+    <ul id="taskList"></ul>
+  </div>
+
+  <!-- Firebase and App logic -->
+  <script type="module">
+    // === FIREBASE SETUP ===
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBdiRWxsnpS55ZhgVAMR89FP7DTXOQ4WiA",
+        authDomain: "discountinggame.firebaseapp.com",
+        projectId: "discountinggame",
+        storageBucket: "discountinggame.firebasestorage.app",
+        messagingSenderId: "497209908113",
+        appId: "1:497209908113:web:6e36f40f63b8154a44d830"
+    };
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // === TASKS ===
+    const tasks = [
+      { id: 'DDgame', name: 'Experiential DDgame', file: 'DDgame.html' },
+      { id: 'hypoDDGame', name: 'Hypothetical DDgame', file: 'hypoDDGame.html' },
+      { id: 'Monetary', name: 'Monetary DDgame', file: 'Monetary.html' }
+    ];
+
+    let participantId = null;
+    let participantData = {};
+
+    // === FUNCTIONS ===
+    async function startSession() {
+      const pid = document.getElementById('participantId').value.trim();
+      if (!pid) return alert('Please enter a participant ID.');
+      participantId = pid;
+
+      const ref = doc(db, "participants", participantId);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        participantData = snap.data();
+        console.log("Loaded data:", participantData);
+      } else {
+        participantData = { completed: {} };
+        await setDoc(ref, participantData);
+      }
+      showMenu();
+    }
+
+    function showMenu() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('menuScreen').classList.remove('hidden');
+      const list = document.getElementById('taskList');
+      list.innerHTML = '';
+      tasks.forEach(task => {
+        const done = participantData.completed[task.id];
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <button onclick="startTask('${task.file}', '${task.id}')">
+            ${task.name} ${done ? '✅' : ''}
+          </button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // Hacer accesibles al window para los botones
+    window.startSession = startSession;
+    window.startTask = (file, id) => {
+      localStorage.setItem('participantId', participantId);
+      localStorage.setItem('currentTask', id);
+      window.location.href = file;
+    };
+  </script>
+
+</body>
+</html>
