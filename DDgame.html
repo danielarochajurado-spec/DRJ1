@@ -108,61 +108,63 @@
 
     // ===== FUNCIONES FIREBASE =====
     let data_rows = []; 
-    async function saveAndExit(jsPsych) {
-      console.log('Saving and exiting...');
-
-      // Retrieve the participant ID
-      let participant_id = jsPsych?.data?.get()?.values()[0]?.participant_id || localStorage.getItem('participant_id') || "unknown";
-
-      // Save data to Excel
+    
+    function exportDataToExcel(participant_id) {
       const worksheet = XLSX.utils.json_to_sheet(data_rows);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Resultados');
-
       // Generate the filename using participant ID and date
       const date = new Date().toISOString().slice(0, 10);
       const filename = `DDGame_results_${participant_id}_${date}.xlsx`;
 
       // Write and download the Excel file
       XLSX.writeFile(workbook, filename);
+    }
+    
+    async function saveDataToFirebase(participant_id, data_rows) {
+        try {
+          const date = new Date().toISOString().slice(0,10);
+          const docId = `DDGame_${date}_${participant_id}`;
+          const docRef = doc(db, "results", docId);
 
-      // Save data to Firebase
-      try {
-        await addDoc(collection(db, "results"), {
-          participant_id,
-          date,
-          data: data_rows
-        });
-        console.log('✅ Data successfully sent to Firestore');
-      } catch (error) {
-        console.error('❌ Error saving data to Firestore:', error);
+          await setDoc(docRef, {
+            participant_id,
+            date,
+            data: data_rows
+          });
+          console.log('✅ Data successfully sent to Firestore');
+         } catch (error) {
+          console.error('❌ Error sending data to Firestore:', error);
+        }
       }
 
-      // Save data to localStorage as a backup
-      localStorage.setItem('DDGame', JSON.stringify(data_rows));
+      async function saveAndExit(jsPsych) {     
+        console.log('Saving and exiting...');     
+        // Retrieve the participant ID     
+        let participant_id = jsPsych?.data?.get()?.values()[0]?.participant_id || localStorage.getItem('participant_id') || "unknown";      
+        exportDataToExcel(participant_id);      
+        await saveDataToFirebase(participant_id, data_rows);      
+        // Save data to localStorage as a backup      
+        localStorage.setItem('DDGame', JSON.stringify(data_rows));      
+        // Redirect or show a confirmation message      
+        alert('Your progress has been saved. The game will now end.');      
+        window.location.href = "index.html"; // Redirect to the main page or a thank-you page
+        }    
+        window.saveAndExit = saveAndExit; // Hacer accesible globalmente
 
-      // Mark the task as complete in Firebase
-      await markTaskComplete();
+      async function markTaskComplete() {
+        const pid = localStorage.getItem('participantId');
+        const taskId = localStorage.getItem('currentTask');
+        const ref = doc(db, "participants", pid);
+        const snap = await getDoc(ref);
+        let data = snap.exists() ? snap.data() : { completed: {} };
 
-      // Redirect or show a confirmation message
-      alert('Your progress has been saved. The game will now end.');
-      window.location.href = "index.html"; // Redirect to the main page or a thank-you page
-    }
-    window.saveAndExit = saveAndExit; // Hacer accesible globalmente
-
-    async function markTaskComplete() {
-      const pid = localStorage.getItem('participantId');
-      const taskId = localStorage.getItem('currentTask');
-      const ref = doc(db, "participants", pid);
-      const snap = await getDoc(ref);
-      let data = snap.exists() ? snap.data() : { completed: {} };
-
-      data.completed[taskId] = true;
-      await setDoc(ref, data);
-    }
-    window.markTaskComplete = markTaskComplete;
-    document.addEventListener('gameComplete', markTaskComplete);
-    
+        data.completed[taskId] = true;
+        await setDoc(ref, data);
+      }
+      window.markTaskComplete = markTaskComplete;
+      document.addEventListener('gameComplete', markTaskComplete);
+      
     function match3App(canvasId = 'board', prevState = null) {
       
       const tile = 56;
@@ -420,39 +422,12 @@
         override_safe_mode: true,          
        
         on_finish: async () => {
-          // Crea una hoja de cálculo a partir de los datos en data_rows
-          const worksheet = XLSX.utils.json_to_sheet(data_rows);
-          const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'Resultados');
-          // Obtén el ID del participante del objeto de datos
-          // Corrected method for jsPsych v7
-          let participant_id = "unknown";
-          const surveyData = jsPsych.data.get().filter({ trial_type: 'survey-text' }).values()[0];
-          if (surveyData && surveyData.response && surveyData.response.participant_id) {
-            participant_id = surveyData.response.participant_id;
-          }
-
-          // Genera el nombre del archivo usando el ID y la fecha
-          const date = new Date().toISOString().slice(0, 10);
-          const filename = `DDGame_results_${participant_id}_${date}.xlsx`;
-
-          // Escribe y descarga el archivo de Excel
-          XLSX.writeFile(workbook, filename);
-
-          // Guardar en Firebase  
-          await addDoc(collection(db, "results"), {
-              participant_id,
-              date,
-              data: data_rows
-            });
-            console.log('✅ Datos enviados correctamente a Firestore');
-          
-          // Guardar en localStorage
-          localStorage.setItem('waitlab_data', JSON.stringify(data_rows));
+          let participant_id = jsPsych?.data?.get()?.values()[0]?.participant_id || localStorage.getItem('participant_id') || "unknown";
+          exportDataToExcel(participant_id);
+          await saveDataToFirebase(participant_id, data_rows);
           await markTaskComplete();
           window.location.href = "index.html";
-          await saveAndExit(jsPsych);  
-      }
+        }
       });
       let jsPsychInstance; // Variable global para almacenar la instancia de jsPsych
 
@@ -472,10 +447,9 @@
         document.body.appendChild(saveExitBtn);
       
       // ======= Variables =======
-      let fixed_delays = [500];
-      //, 875, 1531, 2679, 4689];
+      let fixed_delays = [500, 875, 1531, 2679, 4689];
       let A_s = 6000;
-      let A_l = 12000;
+      let A_l = 15000;
       let stepSize = 2000;
       let total_game_score = 0;
       let last_choice_data = {};
