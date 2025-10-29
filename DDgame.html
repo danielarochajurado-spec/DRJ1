@@ -449,7 +449,7 @@
       // ======= Variables =======
       let fixed_delays = [500, 875, 1531, 2679, 4689];
       let A_s = 6000;
-      let A_l = 15000;
+      let A_l = 18000;
       let stepSize = 2000;
       let total_game_score = 0;
       let last_choice_data = {};
@@ -523,16 +523,17 @@
         type: jsPsychHtmlButtonResponse,   
         stimulus: `<h2>Bem-vindo!</h2>
           <p>
-          Neste experimento, você deverá ganhar pontos coletando gemas em um jogo chamado Caça-Cores<br>
-          Para isso, clique em dois gemas adjacentes para troca-las de posição. A troca funciona quando tem pelo menos <br>
-          três gemas continuas da mesma cor.<br><br>
-          
-          Atenção!<br>
-          O jogo será interrompido em alguns momentos, e você decidirá se aguardar un tempo maior para ter accesso a mais jogo
-          ou um tempo menor para ter accesso a menos jogo. O tempo de espera estará descrito nos botões <br><br>
-          
-          O jogo só vai terminar após você ganhar mais de 2000 gemas ou completar 100 escolhas de botões.<br>
-          
+          Você deverá escolher entre diferentes tempos de
+          espera para jogar um jogo por um tempo curto ou 
+          por um tempo mais longo (três vezes maior que na
+          outra opção).
+          No jogo, tente combinar três ou mais itens da mesma
+          cor clicando em peças adjacentes para trocar suas 
+          posições.
+          Leia cada opção com atenção, pois o tempo de espera
+          varia em cada pergunta.
+          Não há respostas certas ou erradas. Selecione a opção
+          que você prefere.<br></br></br>
           Clique em “Começar” para iniciar a tarefa.
           </p>`,
         choices: ['Começar']
@@ -1082,7 +1083,7 @@
               return !(
                 (p_tracker.p_changes > 3 && response_type.length >= 3) ||
                 p_tracker.no_change > 6 ||
-                response_type.length >= 9
+                response_type.length >= 8 
               );
             }
           };

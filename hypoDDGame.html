@@ -178,12 +178,14 @@ function exportDataToExcel(participant_id) {
       type: jsPsychHtmlButtonResponse,
       stimulus: `<h2>Instruções</h2>
         <p>
-        Imagine que você está participando de um jogo que você gosta de jogar.
-        Ainda assim, o jogo é interrompido e você deve aguardar um tempo para jogar.
-        Durante esta tarefa, você verá várias perguntas do tipo: <em>“O que você prefere?”</em>, seguidas de duas opções de escolha.
-        As opções descrevem um tempo de espera para continuar jogando. 
-        Ainda assim, não haverá o jogo de fato — apenas registraremos suas escolhas.<br><br>
-        Responda como se estivesse realmente jogando, baseando-se em suas preferências reais.
+        Você verá um conjunto de perguntas hipotéticas que
+        pedem que escolha entre diferentes tempos de espera
+        para jogar o seu jogo favorito durante  um tempo curto ou
+         um tempo mais longo (três vezes maior que na outra opção).
+         Leia cada pergunta com atenção, pois o tempo de espera 
+         varia em cada questão.
+         Não há respostas certas ou erradas — selecione a opção que
+          você provavelmente escolheria. 
         </p>
         <p>
         Clique em “Começar” para iniciar.
@@ -221,8 +223,8 @@ function exportDataToExcel(participant_id) {
         `;
       },
       choices: () => [
-        `Esperar ${(delayState.large / 1000).toFixed(1)} segundos, jogar por um tempo maior`,
-        `Esperar ${(current_delay_small / 1000).toFixed(1)} segundos, jogar por um tempo menor`
+        `Esperar ${(delayState.large / 1000).toFixed(1)} segundos para jogar por um tempo maior`,
+        `Esperar ${(current_delay_small / 1000).toFixed(1)} segundos para jogar por um tempo menor`
       ],
       button_html: [
         `<button class="jspsych-btn left-btn">%choice%</button>`,
@@ -363,7 +365,7 @@ function exportDataToExcel(participant_id) {
               const stop = (
                 (p_tracker_local.p_changes > 3 && response_type_local.length >= 3) ||
                 (p_tracker_local.no_change > 6) ||
-                (response_type_local.length >= 9)
+                (response_type_local.length >= 8)
               );
               // debug
               // console.log(`Cond ${i} - iter ${loop_counter} - p_changes: ${p_tracker_local.p_changes}, no_change: ${p_tracker_local.no_change}, responses: ${response_type_local.length}, delay_large: ${delayState_local.large}`);
