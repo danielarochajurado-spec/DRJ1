@@ -449,7 +449,7 @@
       // ======= Variables =======
       let fixed_delays = [500, 875, 1531, 2679, 4689];
       let A_s = 6500;
-      let A_l = 19000;
+      let A_l = 19500;
       let stepSize = 2000;
       let total_game_score = 0;
       let last_choice_data = {};
@@ -471,7 +471,7 @@
         const participant_id_trial = {    
           type: jsPsychSurveyText,   
           questions: [{      
-            prompt: '<h2>Bem-vindo ao experimento.</h2><p>Se você já leu e assinou o termo de consentimento, insira seu número de participante para começar.</p><p>Se ainda não o fez, chame o experimentador.</p>',      
+            prompt: '<h2>Welcome to the experiment.</h2><p> if you read and assigned the consent term, write your participant number to start.</p><p> If you have not assigned it, ask the consent to the researcher.</p>',      
             placeholder: 'Ex: 101',      
             required: true,     
             name: 'participant_id'   
@@ -481,7 +481,7 @@
       if (!saveExitBtn) {
         const newBtn = document.createElement('button');
         newBtn.id = 'saveExitBtn';
-        newBtn.textContent = 'Salvar e sair';
+        newBtn.textContent = 'Save and exit';
         newBtn.style.position = 'fixed';
         newBtn.style.top = '10px';
         newBtn.style.right = '10px';
@@ -521,21 +521,24 @@
       };
       const instructions = {    
         type: jsPsychHtmlButtonResponse,   
-          stimulus: `<h2>Bem-vindo!</h2>
-            <p>
-              Nesta tarefa, você jogará um jogo em que você deverá eliminar gemas. 
-              Para isso, clique em duas gemas adjacentes para trocar suas posições.
-              A troca funciona ao juntar pelo menos três gemas consecutivas da mesma cor.
-              <br><br> 
-              O jogo será interrompido continuamente. Você terá que escolher entre esperar 
-              pouco para jogar pouco ou esperar mais para jogar três vezes mais.
-              Leia cada opção com atenção, pois o tempo de espera 
-              pode variar.
-              Não há escolhas certas ou erradas; selecione a opção que você preferir.
-              <br><br><br>
-              Clique em “Começar” para iniciar a tarefa.
-            </p>`,
-          choices: ['Começar']
+        stimulus: `<h2>Welcome!</h2>
+          <p>
+        In this task, you will play a game where your goal is to eliminate gems.
+        To do this, click on two
+        adjacent gems to swap their positions.
+        A swap works when it creates at least three consecutive gems of the same color.
+        <br><br> 
+        The game will be interrupted continuously, and you will have to
+        choose wating different intervals of time to access to a short playtime 
+        or to a three times longer playtime.
+        Please read each option carefully, as the waiting interval can vary. 
+     
+        There are no right or wrong answers; select the option you  
+        prefer.
+        <br><br><br>
+        Click “Start” to begin the task.
+          </p>`,
+        choices: ['Start']
   
       }; 
       const initialMatch3Trial = {
@@ -547,14 +550,15 @@
         </div>        
         <aside class="hud">       
           <h1>Caça-cores</h1>         
-          <div class="row"><span>Pontos</span><strong id="score">0</strong></div>          
-          <div class="row"><span>Nível</span><strong id="level">1</strong></div> 
-          <div class="row"><span>Progresso</span><span class="muted" id="level-info"></span></div>
+          <div class="row"><span>Points</span><strong id="score">0</strong></div>          
+          <div class="row"><span>Level</span><strong id="level">1</strong></div> 
+          <div class="row"><span>Progress</span><span class="muted" id="level-info"></span></div>
           <div class="bar"><i id="lvlbar"></i></div>
-          <div class="row"><span>Tamanho</span><strong id="size">8 × 8</strong></div>
-          <div class="row"><span>Cores</span><strong id="types">5</strong></div>
-          <div class="row"><button id="shuffle">Mezclar</button></div>
-          <p class="muted">Tip: clique em dois gemas vizinhas para troca-las de posição. A troca funciona quando tem pelo menos três gemas continuas da mesma cor.</p>
+          <div class="row"><span>Size</span><strong id="size">8 × 8</strong></div>
+          <div class="row"><span>Colors</span><strong id="types">5</strong></div>
+          <div class="row"><button id="shuffle">Mix</button></div>
+          <p class="muted">Tip: Click on two adjacent gems to swap their positions.
+            A swap works when it creates at least three consecutive gems of the same color.</p>
           </aside>   
           </div> 
           `, 
@@ -604,27 +608,27 @@
                 <div class="app">
                 <div class="board-wrap">
                   <div class="center-content">
-                    <p style="text-align: center; color: white;">Escolha uma opção</p>
+                    <p style="text-align: center; color: white;">Choose one option</p>
                     </div>
                   </div>
                 <aside class="hud">
                   <h1>Caça-cores</h1>
-                  <div class="row"><span>Pontos</span><strong id="score">${currentScore}</strong></div>
-                  <div class="row"><span>Nível</span><strong id="level">${window.gameState?.level ?? 1}</strong></div>
+                  <div class="row"><span>Points</span><strong id="score">${currentScore}</strong></div>
+                  <div class="row"><span>Level</span><strong id="level">${window.gameState?.level ?? 1}</strong></div>
                   <div>
-                    <div class="row"><span>Progresso</span><span class="muted" id="level-info"></span></div>
+                    <div class="row"><span>Progress</span><span class="muted" id="level-info"></span></div>
                     <div class="bar"><i id="lvlbar"></i></div>
                   </div>
-                  <div class="row"><span>Tamanho</span><strong id="size">${window.gameState?.rows ?? 5} × ${window.gameState?.cols ?? 5}</strong></div>
-                  <div class="row"><span>Cores</span><strong id="types">${window.gameState?.gemTypes ?? 3}</strong></div>
+                  <div class="row"><span>Size</span><strong id="size">${window.gameState?.rows ?? 5} × ${window.gameState?.cols ?? 5}</strong></div>
+                  <div class="row"><span>Colors</span><strong id="types">${window.gameState?.gemTypes ?? 3}</strong></div>
                 </aside>
                 </div>
             `;
           },
           // Evalúa choices en tiempo real
           choices: () => [
-            `Esperar ${(delayState.large / 1000).toFixed(1)}s para jogar por um tempo maior`,
-            `Esperar ${(current_delay_small / 1000).toFixed(1)}s para jogar por um tempo menor`
+            `Waiting ${(delayState.large / 1000).toFixed(1)}s, to play for a longer time`,
+            `Waiting ${(current_delay_small / 1000).toFixed(1)}s, to play for a shorter time`
           ],
           button_html: [
             `<button class="jspsych-btn" style="background-color:#00b050; color:white; padding:20px; font-size:18px; border:none; border-radius:12px;">%choice%</button>`,
@@ -721,14 +725,14 @@
                   </div>
                 <aside class="hud">
                   <h1>Caça-cores</h1>
-                  <div class="row"><span>Pontos</span><strong id="score">${currentScore}</strong></div>
-                  <div class="row"><span>Nível</span><strong id="level">${window.gameState?.level ?? 1}</strong></div>
+                  <div class="row"><span>Points</span><strong id="score">${currentScore}</strong></div>
+                  <div class="row"><span>Level</span><strong id="level">${window.gameState?.level ?? 1}</strong></div>
                   <div>
-                    <div class="row"><span>Progresso</span><span class="muted" id="level-info"></span></div>
+                    <div class="row"><span>Progress</span><span class="muted" id="level-info"></span></div>
                     <div class="bar"><i id="lvlbar"></i></div>
                   </div>
-                  <div class="row"><span>Tamanho</span><strong id="size">${window.gameState?.rows ?? 5} × ${window.gameState?.cols ?? 5}</strong></div>
-                  <div class="row"><span>Cores</span><strong id="types">${window.gameState?.gemTypes ?? 3}</strong></div>
+                  <div class="row"><span>Size</span><strong id="size">${window.gameState?.rows ?? 5} × ${window.gameState?.cols ?? 5}</strong></div>
+                  <div class="row"><span>Colors</span><strong id="types">${window.gameState?.gemTypes ?? 3}</strong></div>
                 </aside>
               </div>
                 </div>
@@ -756,16 +760,17 @@
                     </div>
                     <aside class="hud">
                         <h1>Caça-cores</h1>
-                        <div class="row"><span>Pontos</span><strong id="score">0</strong></div>
-                        <div class="row"><span>Nível</span><strong id="level">1</strong></div>
+                        <div class="row"><span>Points</span><strong id="score">0</strong></div>
+                        <div class="row"><span>Level</span><strong id="level">1</strong></div>
                         <div>
-                            <div class="row"><span>Progresso</span><span class="muted" id="level-info"></span></div>
+                            <div class="row"><span>Progress</span><span class="muted" id="level-info"></span></div>
                             <div class="bar"><i id="lvlbar"></i></div>
                         </div>
-                        <div class="row"><span>Tamanho</span><strong id="size">8 × 8</strong></div>
-                        <div class="row"><span>Cores</span><strong id="types">5</strong></div>
-                        <div class="row"><button id="shuffle">Mezclar</button></div>
-                        <p class="muted">Tip: clique em dois gemas adjacentes para troca-las de posição. A troca funciona quando tem pelo menos três gemas continuas da mesma cor.</p>
+                        <div class="row"><span>Size</span><strong id="size">8 × 8</strong></div>
+                        <div class="row"><span>Colors</span><strong id="types">5</strong></div>
+                        <div class="row"><button id="shuffle">Mix</button></div>
+                        <p class="muted">Tip: click on two adjacent gems to swap their positions.
+                        A swap works when it creates at least three consecutive gems of the same color</p>
                     </aside>
                 </div>
             `,
@@ -782,8 +787,8 @@
                   
                 // Calculate the level based on the score
                 const currentScore = window.gameState?.score ?? 0;
-                const newLevel = Math.floor(currentScore / 200) + 1; // Example: 200 points per level
-                const newAchievements = Math.floor(currentScore / 200)+1; // Example: 20 points per achievement
+                const newLevel = Math.floor(currentScore / 200) + 1; // Example: 100 points per level
+                const newAchievements = Math.floor(currentScore / 200)+1; // Example: 10 points per achievement
 
                 // Update the grid size based on the level
                 const newGridSize = Math.min(14, 5 + Math.floor(newLevel / 2)); // Example: Start at 5x5, max at 10x10
@@ -888,25 +893,25 @@
                 <div class="app">
                 <div class="board-wrap">
                   <div class="center-content">
-                    <p style="text-align: center; color: white;">Escolha a única opção</p>
+                    <p style="text-align: center; color: white;"> Click on the only option.</p>
                     </div>
                   </div>
                 <aside class="hud">
                   <h1>Caça-cores</h1>
-                  <div class="row"><span>Pontos</span><strong id="score">${currentScore}</strong></div>
-                  <div class="row"><span>Nível</span><strong id="level">${window.gameState?.level ?? 1}</strong></div>
+                  <div class="row"><span>Points</span><strong id="score">${currentScore}</strong></div>
+                  <div class="row"><span>Level</span><strong id="level">${window.gameState?.level ?? 1}</strong></div>
                   <div>
-                    <div class="row"><span>Progresso</span><span class="muted" id="level-info"></span></div>
+                    <div class="row"><span>Progress</span><span class="muted" id="level-info"></span></div>
                     <div class="bar"><i id="lvlbar"></i></div>
                   </div>
-                  <div class="row"><span>Tamanho</span><strong id="size">${window.gameState?.rows ?? 5} × ${window.gameState?.cols ?? 5}</strong></div>
-                  <div class="row"><span>Cores</span><strong id="types">${window.gameState?.gemTypes ?? 3}</strong></div>
+                  <div class="row"><span>Size</span><strong id="size">${window.gameState?.rows ?? 5} × ${window.gameState?.cols ?? 5}</strong></div>
+                  <div class="row"><span>Colors</span><strong id="types">${window.gameState?.gemTypes ?? 3}</strong></div>
                 </aside>
               </div>
             `;
           },
           choices: () => [
-            `Esperar ${(delayState.large / 1000).toFixed(1)}s para jogar por um tempo maior`,
+            `Waiting ${(delayState.large / 1000).toFixed(1)}s, to play for a longer time`,
           ],
           button_html: [
             `<button class="jspsych-btn" style="background-color:#00b050; color:white; padding:20px; font-size:18px; border:none; border-radius:12px;">%choice%</button>`,
@@ -967,25 +972,25 @@
                 <div class="app">
                 <div class="board-wrap">
                   <div class="center-content">
-                    <p style="text-align: center; color: white;">Escolha a única opção</p>
+                    <p style="text-align: center; color: white;">Click on the only option.</p>
                     </div>
                   </div>
                 <aside class="hud">
                   <h1>Caça-cores</h1>
-                  <div class="row"><span>Pontos</span><strong id="score">${currentScore}</strong></div>
-                  <div class="row"><span>Nível</span><strong id="level">${window.gameState?.level ?? 1}</strong></div>
+                  <div class="row"><span>Points</span><strong id="score">${currentScore}</strong></div>
+                  <div class="row"><span>Level</span><strong id="level">${window.gameState?.level ?? 1}</strong></div>
                   <div>
-                    <div class="row"><span>Progresso</span><span class="muted" id="level-info"></span></div>
+                    <div class="row"><span>Progress</span><span class="muted" id="level-info"></span></div>
                     <div class="bar"><i id="lvlbar"></i></div>
                   </div>
-                  <div class="row"><span>Tamanho</span><strong id="size">${window.gameState?.rows ?? 5} × ${window.gameState?.cols ?? 5}</strong></div>
-                  <div class="row"><span>Cores</span><strong id="types">${window.gameState?.gemTypes ?? 3}</strong></div>
+                  <div class="row"><span>Slize</span><strong id="size">${window.gameState?.rows ?? 5} × ${window.gameState?.cols ?? 5}</strong></div>
+                  <div class="row"><span>Colors</span><strong id="types">${window.gameState?.gemTypes ?? 3}</strong></div>
                 </aside>
               </div>
             `;
           },
           choices: () => [
-            `Esperar ${(current_delay_small / 1000).toFixed(1)}s para jogar por um tempo menor`
+            `Waiting ${(current_delay_small / 1000).toFixed(1)}s, to play for a shorter time`
           ],
           button_html: [
             `<button class="jspsych-btn" style="background-color:#c00000; color:white; padding:20px; font-size:18px; border:none; border-radius:12px;">%choice%</button>`
@@ -1098,9 +1103,9 @@
         type: jsPsychHtmlButtonResponse,
         stimulus: () => {
           const finalScore = window.gameState?.score ?? 0; // Access the final score from window.gameState
-          return `<p>Tarefa concluída! Você fez ${finalScore} pontos.</p><p>Obrigada por participar. Por favor, continue para a próxima tarefa.</p>`;
+          return `<p>Task finished! Your final game score is: ${finalScore}.</p><p>Thank you for participating.</p>`;
         },
-        choices: ['Fechar']
+        choices: ['Close']
       };
 
       // ======= Main Timeline and Run =======

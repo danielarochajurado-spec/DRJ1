@@ -23,19 +23,26 @@
   </style>
 </head>
 <body>
-    
+  <!-- Language selection -->
+
+  <div id="languageScreen">
+    <h1>Select Language / Seleccione el idioma / Selecione o idioma</h1>
+    <button onclick="setLanguage('en')">English</button>
+    <button onclick="setLanguage('es')">Español</button>
+    <button onclick="setLanguage('pt')">Português</button>
+  </div>
 
   <!-- Login -->
-  <div id="loginScreen">
-    <h1>Enter Participant ID</h1>
+  <div id="loginScreen" class="hidden">
+    <h1 id="loginTitle">Enter Participant ID</h1>
     <input id="participantId" type="text" placeholder="e.g., P001" />
     <br />
-    <button onclick="startSession()">Continue</button>
+    <button id="continueBtn" onclick="startSession()">Continue</button>
   </div>
 
   <!-- Menu -->
   <div id="menuScreen" class="hidden">
-    <h1>Select a Task</h1>
+    <h1 id="menuTitle">Select a Task</h1>
     <ul id="taskList"></ul>
   </div>
 
@@ -57,17 +64,51 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // === TASKS ===
+      // === TASKS ===
     const tasks = [
-      { id: 'DDgame', name: 'Experiential DDgame', file: 'DDgame.html' },
-      { id: 'hypoDDGame', name: 'Hypothetical DDgame', file: 'hypoDDGame.html' },
-      { id: 'Monetary', name: 'Monetary DDgame', file: 'Monetary.html' }
+      { 
+        id: 'DDgame', 
+        name: { en: 'Experiential DDgame', es: 'DDgame experiencial', pt: 'DDgame experiencial' },
+        fileByLang: { en: 'DDgameEnglish.html', es: 'DDgameEsp.html', pt: 'DDgame.html' }
+      },
+      { 
+        id: 'hypoDDGame', 
+        name: { en: 'Hypothetical DDgame', es: 'DDgame hipotético', pt: 'DDgame hipotético' },
+        fileByLang: { en: 'hypoEnglish.html', es: 'hypoEsp.html', pt: 'hypoDDGame.html' }
+      },
+      { 
+        id: 'Monetary', 
+        name: { en: 'Monetary DDgame', es: 'DDgame monetario', pt: 'DDgame monetário' },
+        fileByLang: { en: 'MonetaryEnglish.html', es: 'MonetaryEsp.html', pt: 'Monetary.html' }
+      }
     ];
 
     let participantId = null;
     let participantData = {};
+    let language = 'en'; // default
 
-    // === FUNCTIONS ===
+    // === LANGUAGE SELECTION ===
+    function setLanguage(lang) {
+      language = lang;
+      document.getElementById('languageScreen').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+
+      // Cambiar textos de login según idioma
+      const loginTitle = {
+        en: 'Enter Participant ID',
+        es: 'Ingrese ID del participante',
+        pt: 'Digite o ID do participante'
+      };
+      const continueText = {
+        en: 'Continue',
+        es: 'Continuar',
+        pt: 'Continuar'
+      };
+      document.getElementById('loginTitle').innerText = loginTitle[language];
+      document.getElementById('continueBtn').innerText = continueText[language];
+    }
+
+    // === START SESSION ===
     async function startSession() {
       const pid = document.getElementById('participantId').value.trim();
       if (!pid) return alert('Please enter a participant ID.');
@@ -85,30 +126,44 @@
       showMenu();
     }
 
+    // === SHOW MENU ===
     function showMenu() {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('menuScreen').classList.remove('hidden');
+
+      const menuTitles = {
+        en: 'Select a Task',
+        es: 'Seleccione una tarea',
+        pt: 'Selecione uma tarefa'
+      };
+      document.getElementById('menuTitle').innerText = menuTitles[language];
+
       const list = document.getElementById('taskList');
       list.innerHTML = '';
       tasks.forEach(task => {
         const done = participantData.completed[task.id];
         const li = document.createElement('li');
         li.innerHTML = `
-          <button onclick="startTask('${task.file}', '${task.id}')">
-            ${task.name} ${done ? '✅' : ''}
+          <button onclick="startTask('${task.id}')">
+            ${task.name[language]} ${done ? '✅' : ''}
           </button>
         `;
         list.appendChild(li);
       });
     }
 
-    // Hacer accesibles al window para los botones
-    window.startSession = startSession;
-    window.startTask = (file, id) => {
+    // === START TASK ===
+    window.startTask = (taskId) => {
+      const task = tasks.find(t => t.id === taskId);
+      const file = task.fileByLang[language];  // Selecciona el archivo según idioma
       localStorage.setItem('participantId', participantId);
-      localStorage.setItem('currentTask', id);
+      localStorage.setItem('currentTask', taskId);
       window.location.href = file;
     };
+
+    // Hacer accesibles al window para los botones
+    window.startSession = startSession;
+    window.setLanguage = setLanguage;
   </script>
 
 </body>

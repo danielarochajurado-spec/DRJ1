@@ -33,7 +33,7 @@
 </head>
 <body>
   <div id="jspsych-target"></div>
-   <button id="saveExitBtn"> Salvar e sair </button>
+   <button id="saveExitBtn"> Save and exit </button>
 
 <script type="module">
   // ===== FIREBASE IMPORT =====
@@ -70,7 +70,7 @@ function exportDataToExcel(participant_id) {
     
     async function saveDataToFirebase(participant_id, data_rows) {
         try {
-          const date = new Date().toISOString().slice(0,10);
+          const date = new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
           const docId = `hypoDDGame_${date}_${participant_id}`;
           const docRef = doc(db, "results", docId);
 
@@ -140,7 +140,7 @@ function exportDataToExcel(participant_id) {
  
   const saveExitBtn = document.createElement('button');
   saveExitBtn.id = 'saveExitBtn';
-  saveExitBtn.textContent = 'Salvar e sair';
+  saveExitBtn.textContent = 'save and exit';
   saveExitBtn.style.position = 'fixed';
   saveExitBtn.style.top = '10px';
   saveExitBtn.style.right = '10px';
@@ -160,7 +160,7 @@ function exportDataToExcel(participant_id) {
     const participant_id_trial = {
       type: jsPsychSurveyText,
       questions: [{
-        prompt: '<h2>Bem-vindo ao experimento</h2><p>Se você já leu e assinou o termo de consentimento, insira seu número de participante para começar.</p>',
+        prompt: '<h2>Welcome to the experiment</h2><p>If you already assigned the consent term, write your participants number and, then, press "Start".</p>',
         placeholder: 'Ex: 101',
         required: true,
         name: 'participant_id'
@@ -176,21 +176,24 @@ function exportDataToExcel(participant_id) {
 
     const instructions = {
       type: jsPsychHtmlButtonResponse,
-      stimulus: `<h2>Instruções</h2>
+      stimulus: `<h2>Instructions</h2>
         <p>
-        Você verá um conjunto de perguntas hipotéticas que
-        pedem que escolha entre diferentes tempos de espera
-        para jogar o seu jogo favorito durante  um tempo curto ou
-         um tempo mais longo (três vezes maior que na outra opção).
-         Leia cada pergunta com atenção, pois o tempo de espera 
-         pode variar.
-         Não há respostas certas ou erradas. Selecione a opção que
-          você escolheria caso realmente estivesse jogando. 
+
+          In this task, you will be asked a set of hypothetical questions
+        that require you to decide between different waiting intervals to access
+         to a short playtime 
+        or to a three times longer playtime. 
+        In this task, you will not actually play the game. However, please answer the 
+        questions as if you were going to play.
+        Please read each question carefully, as the waiting time 
+         may vary.
+        There are no right or wrong answers. Select the option you would be most 
+        likely to choose if you were really playing a game. 
         </p>
         <p>
-        Clique em “Começar” para iniciar.
+        Click "Start" to begin.
         </p>`,
-      choices: ['Começar'],
+      choices: ['Start'],
     };
 
     return [participant_id_trial, instructions];
@@ -218,13 +221,13 @@ function exportDataToExcel(participant_id) {
         const currentScore = 0; // no hay juego, pero mantenemos la etiqueta
         return `
           <div style="margin-bottom:20px;">
-            <p><strong>O que você prefere?</strong></p>
+            <p><strong>What would you prefer?</strong></p>
             </div>
         `;
       },
       choices: () => [
-        `Esperar ${(delayState.large / 1000).toFixed(1)} segundos para jogar por um tempo maior`,
-        `Esperar ${(current_delay_small / 1000).toFixed(1)} segundos para jogar por um tempo menor`
+        `Waiting ${(delayState.large / 1000).toFixed(1)} seconds to play for a longer time`,
+        `Waiting ${(current_delay_small / 1000).toFixed(1)} seconds to play for a shorter time`
       ],
       button_html: [
         `<button class="jspsych-btn left-btn">%choice%</button>`,
@@ -389,7 +392,7 @@ function exportDataToExcel(participant_id) {
   // ============================
   const final_message = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: () => `<p>Tarefa finalizada!</p><p>Obrigada pela sua participação</p>`,
+    stimulus: () => `<p>The task has been completed.</p><p>Please proceed to the next one.</p>`,
     choices: ['Fechar']
   };
 

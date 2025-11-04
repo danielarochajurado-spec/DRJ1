@@ -60,7 +60,7 @@
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Resultados');
       // Generate the filename using participant ID and date
-      const date = new Date().toISOString().slice(0, 10);
+      const date = new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
       const filename = `Monetary_results_${participant_id}_${date}.xlsx`;
 
       // Write and download the Excel file
@@ -69,7 +69,7 @@
     
     async function saveDataToFirebase(participant_id, data_rows) {
         try {
-          const date = new Date().toISOString().slice(0,10);
+          const date = new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
           const docId = `Monetary_${date}_${participant_id}`;
           const docRef = doc(db, "results", docId);
 
@@ -180,7 +180,7 @@ function buildInitialTrials(jsPsych_instance) {
     type: jsPsychHtmlButtonResponse,
     stimulus: `<h2>Instruções</h2>
       <p>
-      Agora você verá um conjunto de perguntas hipotéticas
+      Você verá um conjunto de perguntas hipotéticas
       que exigem que você escolha entre diferentes quantias
       de dinheiro.
       Leia cada pergunta com atenção, pois o valor do dinheiro
@@ -222,8 +222,8 @@ function freeTrial(amountState, current_delay, condition_index, response_type, t
       </div>
     `,
     choices: () => [
-      `Ganhar R$ ${amountState.large.toFixed(0)} ${fixed_immediate}`,
-      `Ganhar R$ ${A_l.toFixed(0)} em ${current_delay}`
+      `Ganhar R$${amountState.large.toFixed(0)},00 ${fixed_immediate}`,
+      `Ganhar R$${A_l.toFixed(0)},00 em ${current_delay}`
     ],
     button_html: [
       `<button class="jspsych-btn left-btn">%choice%</button>`,
