@@ -236,25 +236,31 @@ function freeTrial(amountState, current_delay, condition_index, response_type, t
       response_type.push(choice);
       trial_number_tracker.count++;
 
-      // histórico de escolhas
       if (!p_tracker.last_two) p_tracker.last_two = [];
       p_tracker.last_two.push(choice);
 
-      // ajusta valor grande
-      if (choice === 'left') {
-        amountState.large = Math.max(50, amountState.large - stepSize);
+      if (p_tracker.last == null) {
+        p_tracker.last = choice;
       } else {
-        amountState.large = Math.min(A_l, amountState.large + stepSize);
+        if (choice !== p_tracker.last) {
+          p_tracker.hasSwitched = true;
+        }
       }
+      if (!p_tracker.hasSwitched) {
+        amountState.large = Math.max(50, amountState.large - 50);
 
-      // rastreia mudanças de preferência
+      } else {
+        if (choice === 'left') {
+          amountState.large = Math.max(50, amountState.large - stepSize);
+        } else {
+          amountState.large = Math.min(A_l, amountState.large + stepSize);
+        }
+      }
       if (p_tracker.last !== null) {
         if (choice !== p_tracker.last) p_tracker.p_changes++;
         else if (choice === 'right') p_tracker.no_change++;
       }
       p_tracker.last = choice;
-
-      // salva dados
       const last_choice_data = {
         condition: current_delay,
         A_large: amountState.large,
@@ -264,8 +270,10 @@ function freeTrial(amountState, current_delay, condition_index, response_type, t
         delay_large: current_delay,
         delay_small: fixed_immediate,
         latency: data.rt,
-        trial_number: trial_number_tracker.count
+        trial_number: trial_number_tracker.count,
+        has_switched: p_tracker.hasSwitched === true ? 1 : 0
       };
+
       data_rows.push(last_choice_data);
       console.log('Trial data:', last_choice_data);
     }
